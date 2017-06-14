@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Random;
+
 public class PdxBird extends ApplicationAdapter {
 	SpriteBatch batch;
 	Texture background;
@@ -17,6 +19,14 @@ public class PdxBird extends ApplicationAdapter {
 
 	int gameState = 0;
 	float gravity = 2;
+
+	Texture topPipe;
+	Texture bottomPipe;
+	float gap = 400;
+	float maxPipeOffset;
+	Random randomGenerator;
+	float pipeOffset;
+
 	
 	@Override
 	public void create () {
@@ -28,20 +38,37 @@ public class PdxBird extends ApplicationAdapter {
 		birds[1] = new Texture("bird.png");
 		birds[2] = new Texture("bird2.png");
 		birdY = Gdx.graphics.getHeight() / 2 - birds[flapState].getHeight() /2;
+
+		topPipe = new Texture("toptube.png");
+		bottomPipe = new Texture("bottomtube.png");
+		maxPipeOffset = Gdx.graphics.getHeight() / 2 - gap / 2 -100;
+		randomGenerator = new Random();
 	}
 
 	@Override
 	public void render () {
 
+		batch.begin();
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 		if (gameState != 0) {
 
 			if(Gdx.input.justTouched()) {
 				velocity = -30;
+
+				pipeOffset =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
+
 			}
 
-			velocity = velocity + gravity;
-			birdY -= velocity;
+			batch.draw(topPipe, Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2, Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset);
+			batch.draw(bottomPipe, Gdx.graphics.getWidth() / 2 - bottomPipe.getWidth() /2, Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset);
 
+
+
+			if (birdY > 0 || velocity < 0) {
+				velocity = velocity + gravity;
+				birdY -= velocity;
+			}
 		} else {
 
 			if(Gdx.input.justTouched()) {
@@ -58,8 +85,7 @@ public class PdxBird extends ApplicationAdapter {
 			flapState = 0;
 		}
 
-		batch.begin();
-		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
 		batch.end();
 	}
