@@ -25,7 +25,11 @@ public class PdxBird extends ApplicationAdapter {
 	float gap = 400;
 	float maxPipeOffset;
 	Random randomGenerator;
-	float pipeOffset;
+	float pipeVelocity = 4;
+	int numberOfPipes = 4;
+	float[] pipeX = new float[numberOfPipes];
+	float[] pipeOffset = new float[numberOfPipes];
+	float distanceBetweenPipes;
 
 	
 	@Override
@@ -43,6 +47,14 @@ public class PdxBird extends ApplicationAdapter {
 		bottomPipe = new Texture("bottomtube.png");
 		maxPipeOffset = Gdx.graphics.getHeight() / 2 - gap / 2 -100;
 		randomGenerator = new Random();
+		distanceBetweenPipes = Gdx.graphics.getWidth() * 3 / 4;
+
+		for(int i = 0; i < numberOfPipes; i++) {
+			pipeOffset[i] =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
+			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + i * distanceBetweenPipes;
+
+		}
+
 	}
 
 	@Override
@@ -54,16 +66,28 @@ public class PdxBird extends ApplicationAdapter {
 		if (gameState != 0) {
 
 			if(Gdx.input.justTouched()) {
-				velocity = -30;
 
-				pipeOffset =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
+				velocity = -30;
 
 			}
 
-			batch.draw(topPipe, Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2, Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset);
-			batch.draw(bottomPipe, Gdx.graphics.getWidth() / 2 - bottomPipe.getWidth() /2, Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset);
+			for(int i = 0; i < numberOfPipes; i++) {
+
+				if (pipeX[i] < - topPipe.getWidth()) {
+
+					pipeX[i] += numberOfPipes * distanceBetweenPipes;
+
+				} else {
+
+					pipeX[i] = pipeX[i] - pipeVelocity;
+
+				}
 
 
+				batch.draw(topPipe, pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i]);
+				batch.draw(bottomPipe, pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i]);
+
+			}
 
 			if (birdY > 0 || velocity < 0) {
 				velocity = velocity + gravity;
