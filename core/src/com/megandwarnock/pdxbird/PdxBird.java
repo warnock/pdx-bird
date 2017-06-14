@@ -5,9 +5,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
@@ -22,6 +24,9 @@ public class PdxBird extends ApplicationAdapter {
 	float birdY = 0;
 	float velocity = 0;
 	Circle birdCircle;
+	int score = 0;
+	int scoringPipe = 0;
+	BitmapFont font;
 
 	int gameState = 0;
 	float gravity = 2;
@@ -31,7 +36,7 @@ public class PdxBird extends ApplicationAdapter {
 	float gap = 400;
 	float maxPipeOffset;
 	Random randomGenerator;
-	float pipeVelocity = 4;
+	float pipeVelocity = 8;
 	int numberOfPipes = 4;
 	float[] pipeX = new float[numberOfPipes];
 	float[] pipeOffset = new float[numberOfPipes];
@@ -46,6 +51,9 @@ public class PdxBird extends ApplicationAdapter {
 		background = new Texture("bg.png");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
+		font = new BitmapFont();
+		font.setColor(Color.WHITE);
+		font.getData().setScale(10);
 
 		birds = new Texture[3];
 		birds[0] = new Texture("bird.png");
@@ -62,8 +70,7 @@ public class PdxBird extends ApplicationAdapter {
 		bottomPipeShape = new Rectangle[numberOfPipes];
 
 		for(int i = 0; i < numberOfPipes; i++) {
-			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + i * distanceBetweenPipes;
-
+			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + Gdx.graphics.getWidth() + i * distanceBetweenPipes;
 			topPipeShape[i] = new Rectangle();
 			bottomPipeShape[i] = new Rectangle();
 
@@ -78,6 +85,23 @@ public class PdxBird extends ApplicationAdapter {
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		if (gameState != 0) {
+
+			if (pipeX[scoringPipe] < Gdx.graphics.getWidth() / 2) {
+
+				score++;
+
+				Gdx.app.log("Score", String.valueOf(score));
+
+				if (scoringPipe < numberOfPipes - 1) {
+
+					scoringPipe++;
+
+				} else {
+
+					scoringPipe = 0;
+				}
+
+			}
 
 			if(Gdx.input.justTouched()) {
 
@@ -95,6 +119,7 @@ public class PdxBird extends ApplicationAdapter {
 				} else {
 
 					pipeX[i] = pipeX[i] - pipeVelocity;
+
 
 				}
 
@@ -129,19 +154,29 @@ public class PdxBird extends ApplicationAdapter {
 
 
 		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
+
+		font.draw(batch, String.valueOf(score), 100, 200);
+
+
 		batch.end();
 
 		birdCircle.set(Gdx.graphics.getWidth() / 2, birdY + birds[flapState].getHeight() / 2, birds[flapState].getWidth() / 2);
 
 
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		shapeRenderer.setColor(Color.RED);
-		shapeRenderer.circle(birdCircle.x, birdCircle.y, birdCircle.radius);
+
+//
+//		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+//		shapeRenderer.setColor(Color.RED);
+//		shapeRenderer.circle(birdCircle.x, birdCircle.y, birdCircle.radius);
 
 		for(int i = 0; i < numberOfPipes; i++) {
 
-			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i], topPipe.getWidth(), topPipe.getHeight());
-			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
+//			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i], topPipe.getWidth(), topPipe.getHeight());
+//			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
+
+			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
+				Gdx.app.log("collision", "yes");
+			}
 
 		}
 
