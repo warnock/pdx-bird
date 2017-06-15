@@ -19,6 +19,8 @@ public class PdxBird extends ApplicationAdapter {
 	Texture background;
 	ShapeRenderer shapeRenderer;
 
+	Texture gameOver;
+
 	Texture[] birds;
 	int flapState = 0;
 	float birdY = 0;
@@ -44,11 +46,12 @@ public class PdxBird extends ApplicationAdapter {
 	Rectangle[] topPipeShape;
 	Rectangle[] bottomPipeShape;
 
-	
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		background = new Texture("bg.png");
+		gameOver = new Texture("go.png");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
 		font = new BitmapFont();
@@ -59,7 +62,7 @@ public class PdxBird extends ApplicationAdapter {
 		birds[0] = new Texture("bird.png");
 		birds[1] = new Texture("bird.png");
 		birds[2] = new Texture("bird2.png");
-		birdY = Gdx.graphics.getHeight() / 2 - birds[flapState].getHeight() /2;
+
 
 		topPipe = new Texture("toptube.png");
 		bottomPipe = new Texture("bottomtube.png");
@@ -69,13 +72,20 @@ public class PdxBird extends ApplicationAdapter {
 		topPipeShape = new Rectangle[numberOfPipes];
 		bottomPipeShape = new Rectangle[numberOfPipes];
 
+		startGame();
+
+	}
+
+	public void startGame() {
+		birdY = Gdx.graphics.getHeight() / 2 - birds[flapState].getHeight() /2;
+
 		for(int i = 0; i < numberOfPipes; i++) {
+
 			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + Gdx.graphics.getWidth() + i * distanceBetweenPipes;
 			topPipeShape[i] = new Rectangle();
 			bottomPipeShape[i] = new Rectangle();
 
 		}
-
 	}
 
 	@Override
@@ -84,7 +94,7 @@ public class PdxBird extends ApplicationAdapter {
 		batch.begin();
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-		if (gameState != 0) {
+		if (gameState == 1) {
 
 			if (pipeX[scoringPipe] < Gdx.graphics.getWidth() / 2) {
 
@@ -131,14 +141,33 @@ public class PdxBird extends ApplicationAdapter {
 				bottomPipeShape[i] = new Rectangle(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
 			}
 
-			if (birdY > 0 || velocity < 0) {
+			if (birdY > 0 ) {
+
 				velocity = velocity + gravity;
 				birdY -= velocity;
+
+			} else	{
+				gameState = 2;
 			}
-		} else {
+
+		} else if (gameState == 0) {
 
 			if(Gdx.input.justTouched()) {
 				gameState = 1;
+
+			}
+
+		} else if (gameState == 2) {
+
+			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2 - gameOver.getHeight() / 2);
+
+			if(Gdx.input.justTouched()) {
+
+				gameState = 1;
+				startGame();
+				score = 0;
+				scoringPipe = 0;
+				velocity = 0;
 
 			}
 		}
@@ -176,6 +205,7 @@ public class PdxBird extends ApplicationAdapter {
 
 			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
 				Gdx.app.log("collision", "yes");
+				gameState = 2;
 			}
 
 		}
