@@ -50,7 +50,7 @@ public class PdxBird extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		background = new Texture("bg.png");
+		background = new Texture("bg.jpg");
 		gameOver = new Texture("go.png");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
