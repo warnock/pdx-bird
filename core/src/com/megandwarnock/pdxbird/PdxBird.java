@@ -58,10 +58,11 @@ public class PdxBird extends ApplicationAdapter {
 		font.setColor(Color.WHITE);
 		font.getData().setScale(10);
 
-		birds = new Texture[3];
-		birds[0] = new Texture("bird.png");
-		birds[1] = new Texture("bird.png");
-		birds[2] = new Texture("bird2.png");
+		birds = new Texture[4];
+		birds[0] = new Texture("pdxb1.png");
+		birds[1] = new Texture("pdxb2.png");
+		birds[2] = new Texture("pdxb3.png");
+		birds[3] = new Texture("pdxb4.png");
 
 
 		topPipe = new Texture("toptube.png");
@@ -177,6 +178,8 @@ public class PdxBird extends ApplicationAdapter {
 		} else if (flapState == 1) {
 			flapState = 2;
 		} else if (flapState == 2) {
+			flapState = 3;
+		} else {
 			flapState = 0;
 		}
 
