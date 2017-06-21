@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Random;
 
@@ -20,6 +22,7 @@ public class PdxBird extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 
 	Texture gameOver;
+	Texture playAgain;
 
 	Texture[] birds;
 	int flapState = 0;
@@ -35,7 +38,7 @@ public class PdxBird extends ApplicationAdapter {
 
 	Texture topPipe;
 	Texture bottomPipe;
-	float gap = 400;
+	float gap = 600;
 	float maxPipeOffset;
 	Random randomGenerator;
 	float pipeVelocity = 8;
@@ -46,17 +49,22 @@ public class PdxBird extends ApplicationAdapter {
 	Rectangle[] topPipeShape;
 	Rectangle[] bottomPipeShape;
 
+	Stage stage;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		background = new Texture("bg.jpg");
 		gameOver = new Texture("go.png");
+		playAgain = new Texture("playagain.jpg");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
 		font = new BitmapFont();
 		font.setColor(Color.WHITE);
 		font.getData().setScale(10);
+
+		stage = new Stage(new ScreenViewport());
+		Gdx.input.setInputProcessor(stage);
 
 		birds = new Texture[4];
 		birds[0] = new Texture("pdxb1.png");
@@ -82,6 +90,7 @@ public class PdxBird extends ApplicationAdapter {
 
 		for(int i = 0; i < numberOfPipes; i++) {
 
+			pipeOffset[i] =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
 			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + Gdx.graphics.getWidth() + i * distanceBetweenPipes;
 			topPipeShape[i] = new Rectangle();
 			bottomPipeShape[i] = new Rectangle();
@@ -160,8 +169,9 @@ public class PdxBird extends ApplicationAdapter {
 
 		} else if (gameState == 2) {
 
-			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2 - gameOver.getHeight() / 2);
+			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
+//			batch.draw(playAgain, Gdx.graphics.getWidth() /2 - playAgain.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playAgain.getHeight() / 2 );
 			if(Gdx.input.justTouched()) {
 
 				gameState = 1;
@@ -182,7 +192,6 @@ public class PdxBird extends ApplicationAdapter {
 		} else {
 			flapState = 0;
 		}
-
 
 
 		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
