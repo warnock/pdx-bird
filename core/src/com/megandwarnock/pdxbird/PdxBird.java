@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Random;
@@ -22,7 +23,7 @@ public class PdxBird extends ApplicationAdapter {
 	ShapeRenderer shapeRenderer;
 
 	Texture gameOver;
-	Texture playAgain;
+	Texture splash;
 
 	Texture[] birds;
 	int flapState = 0;
@@ -49,6 +50,8 @@ public class PdxBird extends ApplicationAdapter {
 	Rectangle[] topPipeShape;
 	Rectangle[] bottomPipeShape;
 
+	float delay = 1;
+
 	Stage stage;
 
 	@Override
@@ -56,7 +59,7 @@ public class PdxBird extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		background = new Texture("bg.jpg");
 		gameOver = new Texture("go.png");
-		playAgain = new Texture("playagain.jpg");
+		splash = new Texture("splash.jpg");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
 		font = new BitmapFont();
@@ -89,7 +92,6 @@ public class PdxBird extends ApplicationAdapter {
 		birdY = Gdx.graphics.getHeight() / 2 - birds[flapState].getHeight() /2;
 
 		for(int i = 0; i < numberOfPipes; i++) {
-
 			pipeOffset[i] =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
 			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + Gdx.graphics.getWidth() + i * distanceBetweenPipes;
 			topPipeShape[i] = new Rectangle();
@@ -98,82 +100,98 @@ public class PdxBird extends ApplicationAdapter {
 		}
 	}
 
+	public void birdAndScore() {
+		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
+		font.draw(batch, String.valueOf(score), 100, 200);
+	}
+
+	public void collision() {
+		//circle shape around the bird to detect collision
+		birdCircle.set(Gdx.graphics.getWidth() / 2, birdY + birds[flapState].getHeight() / 2, birds[flapState].getWidth() / 2);
+
+		//collision of pipes
+		for(int i = 0; i < numberOfPipes; i++) {
+			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
+				Gdx.app.log("collision", "yes");
+				gameState = 2;
+			}
+		}
+	}
+
 	@Override
 	public void render () {
-
+//background graphics being drawn
 		batch.begin();
+
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+//playing the game
+		 if(gameState == 0) {
 
-		if (gameState == 1) {
+			batch.draw(splash, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			 Timer.schedule(new Timer.Task() {
+				 @Override
+				 public void run() {
+					 if(gameState == 0) {
+						 gameState = 1;
+					 }
+				 }
+			 }, delay);
 
+		} else if (gameState == 2) {
+			 collision();
+//setting the score
+			 birdAndScore();
 			if (pipeX[scoringPipe] < Gdx.graphics.getWidth() / 2) {
-
 				score++;
-
-				Gdx.app.log("Score", String.valueOf(score));
-
 				if (scoringPipe < numberOfPipes - 1) {
-
 					scoringPipe++;
-
 				} else {
-
 					scoringPipe = 0;
 				}
-
 			}
-
+//Starting the bird
 			if(Gdx.input.justTouched()) {
-
 				velocity = -30;
-
 			}
-
+//randomizing the pipes and generating placement
 			for(int i = 0; i < numberOfPipes; i++) {
-
 				if (pipeX[i] < - topPipe.getWidth()) {
-
 					pipeX[i] += numberOfPipes * distanceBetweenPipes;
 					pipeOffset[i] =  (randomGenerator.nextFloat() - 0.5f) * (Gdx.graphics.getHeight() - gap - 200);
-
 				} else {
-
 					pipeX[i] = pipeX[i] - pipeVelocity;
-
-
 				}
-
-
+//pipes being drawn
 				batch.draw(topPipe, pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i]);
 				batch.draw(bottomPipe, pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i]);
 
-				topPipeShape[i] = new Rectangle(pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i], topPipe.getWidth(), topPipe.getHeight());
-				bottomPipeShape[i] = new Rectangle(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
+				topPipeShape[i] = new Rectangle(pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i], topPipe.getWidth				(), topPipe.getHeight());
+
+				bottomPipeShape[i] = new Rectangle(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + 				pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
 			}
 
 			if (birdY > 0 ) {
-
 				velocity = velocity + gravity;
 				birdY -= velocity;
 
 			} else	{
+				gameState = 3;
+			}
+
+// is the hold state before player presses button to start
+		} else if (gameState == 1) {
+			birdAndScore();
+			if(Gdx.input.justTouched()) {
 				gameState = 2;
 			}
 
-		} else if (gameState == 0) {
-
-			if(Gdx.input.justTouched()) {
-				gameState = 1;
-
-			}
-
-		} else if (gameState == 2) {
+//is the game over state
+		} else if (gameState == 3) {
 
 			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
-//			batch.draw(playAgain, Gdx.graphics.getWidth() /2 - playAgain.getWidth() / 2, Gdx.graphics.getHeight() / 2 - playAgain.getHeight() / 2 );
 			if(Gdx.input.justTouched()) {
-
+//resetting the game sore and state
 				gameState = 1;
 				startGame();
 				score = 0;
@@ -182,7 +200,7 @@ public class PdxBird extends ApplicationAdapter {
 
 			}
 		}
-
+//animation of the flapping bird
 		if (flapState == 0) {
 			flapState = 1;
 		} else if (flapState == 1) {
@@ -193,35 +211,7 @@ public class PdxBird extends ApplicationAdapter {
 			flapState = 0;
 		}
 
-
-		batch.draw(birds[flapState], Gdx.graphics.getWidth() / 2 - birds[flapState].getWidth() / 2, birdY);
-
-		font.draw(batch, String.valueOf(score), 100, 200);
-
-
 		batch.end();
-
-		birdCircle.set(Gdx.graphics.getWidth() / 2, birdY + birds[flapState].getHeight() / 2, birds[flapState].getWidth() / 2);
-
-
-
-//
-//		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-//		shapeRenderer.setColor(Color.RED);
-//		shapeRenderer.circle(birdCircle.x, birdCircle.y, birdCircle.radius);
-
-		for(int i = 0; i < numberOfPipes; i++) {
-
-//			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i], topPipe.getWidth(), topPipe.getHeight());
-//			shapeRenderer.rect(pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i], bottomPipe.getWidth(), bottomPipe.getHeight());
-
-			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
-				Gdx.app.log("collision", "yes");
-				gameState = 2;
-			}
-
-		}
-
 		shapeRenderer.end();
 	}
 }
