@@ -50,7 +50,7 @@ public class PdxBird extends ApplicationAdapter {
 	Rectangle[] topPipeShape;
 	Rectangle[] bottomPipeShape;
 
-	float delay = 1;
+	float delay = 2;
 
 	Stage stage;
 
@@ -113,7 +113,7 @@ public class PdxBird extends ApplicationAdapter {
 		for(int i = 0; i < numberOfPipes; i++) {
 			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
 				Gdx.app.log("collision", "yes");
-				gameState = 2;
+				gameState = 3;
 			}
 		}
 	}
