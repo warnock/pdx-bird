@@ -96,7 +96,6 @@ public class PdxBird extends ApplicationAdapter {
 			pipeX[i] = Gdx.graphics.getWidth() / 2 - topPipe.getWidth() / 2 + Gdx.graphics.getWidth() + i * distanceBetweenPipes;
 			topPipeShape[i] = new Rectangle();
 			bottomPipeShape[i] = new Rectangle();
-
 		}
 	}
 
@@ -106,10 +105,8 @@ public class PdxBird extends ApplicationAdapter {
 	}
 
 	public void collision() {
-		//circle shape around the bird to detect collision
 		birdCircle.set(Gdx.graphics.getWidth() / 2, birdY + birds[flapState].getHeight() / 2, birds[flapState].getWidth() / 2);
 
-		//collision of pipes
 		for(int i = 0; i < numberOfPipes; i++) {
 			if (Intersector.overlaps(birdCircle, topPipeShape[i]) || Intersector.overlaps(birdCircle, bottomPipeShape[i])) {
 				Gdx.app.log("collision", "yes");
@@ -120,14 +117,13 @@ public class PdxBird extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-//background graphics being drawn
+
 		batch.begin();
-
 		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-//playing the game
+		 //GAME STATE - splash page going to instructions stage
 		 if(gameState == 0) {
-
 			batch.draw(splash, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 			 Timer.schedule(new Timer.Task() {
 				 @Override
 				 public void run() {
@@ -137,10 +133,11 @@ public class PdxBird extends ApplicationAdapter {
 				 }
 			 }, delay);
 
+		 //GAME STATE - playing the game
 		} else if (gameState == 2) {
 			 collision();
-//setting the score
 			 birdAndScore();
+
 			if (pipeX[scoringPipe] < Gdx.graphics.getWidth() / 2) {
 				score++;
 				if (scoringPipe < numberOfPipes - 1) {
@@ -149,11 +146,12 @@ public class PdxBird extends ApplicationAdapter {
 					scoringPipe = 0;
 				}
 			}
-//Starting the bird
+
 			if(Gdx.input.justTouched()) {
 				velocity = -30;
 			}
-//randomizing the pipes and generating placement
+
+			//randomizing the pipes and generating placement
 			for(int i = 0; i < numberOfPipes; i++) {
 				if (pipeX[i] < - topPipe.getWidth()) {
 					pipeX[i] += numberOfPipes * distanceBetweenPipes;
@@ -161,7 +159,7 @@ public class PdxBird extends ApplicationAdapter {
 				} else {
 					pipeX[i] = pipeX[i] - pipeVelocity;
 				}
-//pipes being drawn
+
 				batch.draw(topPipe, pipeX[i], Gdx.graphics.getHeight() / 2 + gap / 2 + pipeOffset[i]);
 				batch.draw(bottomPipe, pipeX[i], Gdx.graphics.getHeight() / 2 - gap / 2 - bottomPipe.getHeight() + pipeOffset[i]);
 
@@ -178,29 +176,28 @@ public class PdxBird extends ApplicationAdapter {
 				gameState = 3;
 			}
 
-// is the hold state before player presses button to start
+		//GAME STATE - instruction state before game play state
 		} else if (gameState == 1) {
 			birdAndScore();
 			if(Gdx.input.justTouched()) {
 				gameState = 2;
 			}
 
-//is the game over state
+		//GAME STATE - game over
 		} else if (gameState == 3) {
 
 			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
 			if(Gdx.input.justTouched()) {
-//resetting the game sore and state
+				//resetting the game sore and state
 				gameState = 1;
 				startGame();
 				score = 0;
 				scoringPipe = 0;
 				velocity = 0;
-
 			}
 		}
-//animation of the flapping bird
+		//animation of the flapping bird
 		if (flapState == 0) {
 			flapState = 1;
 		} else if (flapState == 1) {

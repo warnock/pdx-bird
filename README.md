@@ -1,4 +1,4 @@
-# _PDX Birds_
+# _PDX Bird_
 
 ### By Megan Warnock
 #### Android Application, 6/26/17
@@ -7,7 +7,7 @@ Current Version: 1.0
 
 ## Description
 
-#### The PDX Birds game is a remaking of the original fun and challenging Flappy Birds game. 
+#### The PDX Bird game is a remaking of the original fun and challenging Flappy Birds game. 
 
 ## Setup
 
@@ -40,6 +40,8 @@ Andriod Studios
 LibGDX
 
 Java
+
+Illustrator (for graphics)
 
 ### License
 
