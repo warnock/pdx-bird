@@ -24,6 +24,7 @@ public class PdxBird extends ApplicationAdapter {
 
 	Texture gameOver;
 	Texture splash;
+	Texture tapToPlay;
 
 	Texture[] birds;
 	int flapState = 0;
@@ -60,6 +61,7 @@ public class PdxBird extends ApplicationAdapter {
 		background = new Texture("bg.jpg");
 		gameOver = new Texture("go.png");
 		splash = new Texture("splash.jpg");
+		tapToPlay = new Texture("tap_to_play.png");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
 		font = new BitmapFont();
@@ -179,13 +181,15 @@ public class PdxBird extends ApplicationAdapter {
 		//GAME STATE - instruction state before game play state
 		} else if (gameState == 1) {
 			birdAndScore();
+			batch.draw(tapToPlay, Gdx.graphics.getWidth() /2 - tapToPlay.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+
 			if(Gdx.input.justTouched()) {
 				gameState = 2;
 			}
 
 		//GAME STATE - game over
 		} else if (gameState == 3) {
-
+			birdAndScore();
 			batch.draw(gameOver, Gdx.graphics.getWidth() /2 - gameOver.getWidth() / 2, Gdx.graphics.getHeight() / 2);
 
 			if(Gdx.input.justTouched()) {
