@@ -78,8 +78,8 @@ public class PdxBird extends ApplicationAdapter {
 		birds[3] = new Texture("pdxb4.png");
 
 
-		topPipe = new Texture("toptube.png");
-		bottomPipe = new Texture("bottomtube.png");
+		topPipe = new Texture("top_pipe.png");
+		bottomPipe = new Texture("bottom_pipe.png");
 		maxPipeOffset = Gdx.graphics.getHeight() / 2 - gap / 2 -100;
 		randomGenerator = new Random();
 		distanceBetweenPipes = Gdx.graphics.getWidth() * 3 / 4;
