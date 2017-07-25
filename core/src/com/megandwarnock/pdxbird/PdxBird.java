@@ -59,9 +59,9 @@ public class PdxBird extends ApplicationAdapter {
 	public void create () {
 		batch = new SpriteBatch();
 		background = new Texture("bg.jpg");
-		gameOver = new Texture("go.png");
-		splash = new Texture("splash.jpg");
-		tapToPlay = new Texture("tap_to_play.png");
+		gameOver = new Texture("game_over.png");
+		splash = new Texture("splash.png");
+		tapToPlay = new Texture("play.png");
 		shapeRenderer = new ShapeRenderer();
 		birdCircle = new Circle();
 		font = new BitmapFont();
