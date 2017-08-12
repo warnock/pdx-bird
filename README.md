@@ -4,9 +4,9 @@
 #### Android Application, 6/26/17
 Current Version: 1.0
 
-![PDXBird: Splash Page](/Android/res/raw/splash.png?raw=true "PDXBird - Splash Activity")
-![PDXBird: Start Game](/Android/res/raw/start.png?raw=true "PDXBird - Start Game")
-![PDXBird:  Game Over](/Android/res/raw/stop.png?raw=true "PDXBird - Game Over")
+![PDXBird: Splash Page](/android/res/raw/splash.png?raw=true "PDXBird - Splash Activity")
+![PDXBird: Start Game](/android/res/raw/start.png?raw=true "PDXBird - Start Game")
+![PDXBird:  Game Over](/android/res/raw/stop.png?raw=true "PDXBird - Game Over")
 
 ## Description
 
